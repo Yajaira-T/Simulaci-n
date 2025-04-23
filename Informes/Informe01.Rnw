@@ -23,8 +23,8 @@ Azuay & Cuenca\\ \hline
 \end {tabular}
 \end{table}
 
-Otro parrafo de prueba
-<<chunk01>>=
+Otro párrafo de prueba
+<<chunk01, background= '#f1fdf1'>>=
 3+5-2
 rnorm(5, mean=12, sd=4)
 @

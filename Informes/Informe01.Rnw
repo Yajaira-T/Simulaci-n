@@ -1,7 +1,4 @@
-\documentclass{article}
 
-\begin{document}
-\SweaveOpts{concordance=TRUE}
 \documentclass[12pt, a4paper]{book}
 \usepackage{amsmath, float}
 
@@ -31,3 +28,5 @@ Otro parrafo de prueba
 3+5-2
 rnorm(5, mean=12, sd=4)
 @
+
+\end{document}

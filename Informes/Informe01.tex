@@ -1,4 +1,4 @@
-\documentclass{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+\documentclass[12pt, a4paper]{book}\usepackage[]{graphicx}\usepackage[]{xcolor}
 % maxwidth is the original width if it is less than linewidth
 % otherwise use linewidth (to make sure the graphics do not exceed the margin)
 \makeatletter
@@ -49,16 +49,12 @@
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\begin{document}
-\SweaveOpts{concordance=TRUE}
-\documentclass[12pt, a4paper]{book}
 \usepackage{amsmath, float}
 
 \title{Primer informe dinámico}
 \author{Yajaira Toaquiza}
 \date{\today}
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
 \maketitle
@@ -66,30 +62,39 @@
 Este es el texto del primer informe automático generado por una Github Actions.\newline
 
 Ahora vamos a probar el código generado para la ejecución automática del primer informe.
-Comprobación de los cambios
-\begin{table}{H}
+
+\begin{table}[H]
 \centering
-\begin {tabular}{|c|c|}\hline
-\textbf {Provincia} & \textbf {Capital}\\ \hline
+\begin{tabular}{|c|c|}\hline
+\textbf{Provincia} & \textbf{Capital}\\ \hline
 Pichincha & Quito\\ \hline
-Azuay & Cuenca\\ \hline 
-\end {tabular}
+Guayas & Guayaquil\\ \hline
+Azuay & Cuenca\\ \hline
+\end{tabular}
 \end{table}
 
-Otro parrafo de prueba
+Otro párrafo de prueba.
+
+
+
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlnum{3}\hlopt{+}\hlnum{5}\hlopt{-}\hlnum{2}
-\end{alltt}
+\definecolor{shadecolor}{rgb}{0.945, 0.992, 0.945}\color{fgcolor}\begin{kframe}
 \begin{verbatim}
+3 + 5 - 2
 ## [1] 6
-\end{verbatim}
-\begin{alltt}
-\hlkwd{rnorm}\hldef{(}\hlnum{5}\hldef{,} \hlkwc{mean}\hldef{=}\hlnum{12}\hldef{,} \hlkwc{sd}\hldef{=}\hlnum{4}\hldef{)}
-\end{alltt}
-\begin{verbatim}
-## [1]  9.274896 14.580096  9.890838 11.524981  7.173160
+rnorm(5, mean = 12, sd = 4)
+## [1] 20.130109 12.288503 16.250226  3.590547 11.696390
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
+
+A continuación nuestro segundo chunk
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.945, 0.992, 0.945}\color{fgcolor}
+\includegraphics[width=\maxwidth]{figure/chunk02-1} 
+\end{knitrout}
+
+
+
+
+\end{document}

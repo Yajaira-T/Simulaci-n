@@ -24,6 +24,10 @@ Azuay & Cuenca\\ \hline
 \end{table}
 
 Otro párrafo de prueba.
+<<setup, include=FALSE>>=
+knitr::opts_chunk$set(highlight = FALSE, background = '#f1fdf1')
+@
+
 
 <<chunk01>>=
 3 + 5 - 2

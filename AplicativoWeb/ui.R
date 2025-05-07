@@ -8,6 +8,13 @@
 #
 
 library(shiny)
+#Tamaño del grafico
+tamaños <- list(
+  Pequeno = list(width = "300px", height = "300px"),
+  Mediano = list(width = "400px", height = "400px"),
+  Grande = list(width = "500px", height = "500px")
+  
+)
 
 # Define UI for application that draws a histogram
 fluidPage(
@@ -24,7 +31,31 @@ fluidPage(
             
             radioButtons("tipo", "Seleccione el tipo de variables a analizar",choiceNames =  c("Cuantitativas", "Cualitativas"),
                          choiceValues = c("numeric", "character"), selected="numeric"),
-           selectInput("var", "Variable seleccionada", choices = tvar$Variable, selected = tvar$Variable[2] )
+          selectInput("var", "Variable seleccionada", choices = NULL), #sugerencia
+            
+           #selectInput("var", "Variable seleccionada", choices = tvar$Variable, selected = tvar$Variable[2]),
+           selectInput("barras", "Seleccione el color de las barras",
+                       choices = c(
+                         "Coral" = "#FF7F50",
+                         "Verde pálido" = "#98FB98",
+                         "Aguamarina" = "#7FFFD4",
+                         "Trigo" = "#F5DEB3",
+                         "Rosa claro" = "#FFB6C1",
+                         "Ciruela" = "#DDA0DD",
+                         "Aceituna" = "#808000",
+                         "Turquesa" = "#40E0D0"
+                       )
+           ),
+           
+           selectInput("borde", "Seleccione el color del borde", 
+                       choices=c(
+                         "Rojo oscuro"="#8B0000",
+                         "Violeta medio rojo"="#C71585",
+                         "Índigo"="#4B0082",
+                         "Azul medianoche"="#191970")),
+           
+           radioButtons("tamaño", "Seleccione el tamaño del gráfico:", choiceNames  = c("Pequeño", "Mediano", "Grande"), choiceValues = names(tamaños), selected = "Mediano")
+        #)
         ),
 
         # Show a plot of the generated distribution
@@ -32,7 +63,8 @@ fluidPage(
             h2("Resumen:"),
            verbatimTextOutput("resumen"),
            h2("Gráfico"),
-           plotOutput("gráfico", width="350px")
+           uiOutput("grafico_ui")
+           #plotOutput("gráfico", width="350px")
         )
     )
 )

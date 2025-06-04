@@ -80,6 +80,35 @@ fun_poisson <- function(lambda) {
   return(k)
 }
 
+#Binomial Negativa
+fun_binomial_negativa <- function(r, p){
+  U <- runif(1)
+  pk <- p^r
+  k <- r
+  Fk <- 0
+  repeat{
+    Fk <- Fk + pk
+    if(U < Fk){
+      return(k)
+      break
+    }
+    pk <- (k*(1-p)/(k-r+1))*pk
+    k <- k+1
+  }
+}
+# Función para distribución personalizada
+fun_otro_caso <- function(valores, probabilidades) {
+  U <- runif(1)
+  Fx <- 0
+  for (i in 1:length(valores)) {
+    Fx <- Fx + probabilidades[i]
+    if (U <= Fx) {
+      return(valores[i])
+    }
+  }
+  return(valores[length(valores)]) # En caso de error, devolver el último valor
+}
+
 # Define server logic required to draw a histogram
 function(input, output, session) {
   
@@ -305,6 +334,7 @@ function(input, output, session) {
     
     if(dist_seleccionada() == "Binomial") {
       tagList(
+        numericInput("ncols_bin", "número columnas (tabla de resultados)", 10, min = 5),
         numericInput("n_bin", "Número de ensayos (n):", value = 10, min = 1),
         numericInput("p_bin", "Probabilidad de éxito (p):", value = 0.5, min = 0, max = 1, step = 0.01),
         numericInput("num_bin", "Número de simulaciones:", value = 1000, min = 100),
@@ -312,9 +342,26 @@ function(input, output, session) {
       )
     } else if(dist_seleccionada() == "Poisson") {
       tagList(
+        numericInput("ncols_pois", "número columnas (tabla de resultados)", 10, min = 5),
         numericInput("lambda", "Valor de lambda (λ):", value = 4, min = 0.1, step = 0.1),
         numericInput("num_pois", "Número de simulaciones:", value = 1000, min = 100),
         actionButton("calc_pois", "Calcular", class = "btn-success")
+      )
+    } else if(dist_seleccionada() == "Binomial Negativa") {
+      tagList(
+        numericInput("ncols_bin_neg", "número columnas (tabla de resultados)", 10, min = 5),
+        numericInput("r_bin_neg", "Número de éxitos (r):", 10, min = 1),
+        numericInput("p_bin_neg", "Probabilidad de éxito (p):", 0.5, min = 0, max = 1, step = 0.01),
+        numericInput("num_bin_neg", "Número de simulaciones:", 1000, min = 100),
+        actionButton("calc_bin_neg", "Calcular", class = "btn-success")
+      )
+    }else if(dist_seleccionada() == "Otro caso") {
+      tagList(
+        numericInput("ncols_otro", "Número columnas (tabla de resultados)", 10, min = 5),
+        textInput("valores_otro", "Valores de X (separados por comas):", "1, 2, 3, 4"),
+        textInput("probabilidades_otro", "Probabilidades (separadas por comas, deben sumar 1):", "0.1, 0.2, 0.3, 0.4"),
+        numericInput("num_otro", "Número de simulaciones:", value = 1000, min = 100),
+        actionButton("calc_otro", "Calcular", class = "btn-success")
       )
     }
   })
@@ -338,6 +385,18 @@ function(input, output, session) {
     cat("Media:", mean(x), "\nVarianza:", var(x))
   })
   
+  output$tablaBin <- function(){
+    
+    req(input$distribucion, input$siguiente > 0, input$calc_bin > 0)
+    
+    res <- conv_matrix(sapply(1:input$num_bin, function(k){fun_binomial(input$n_bin, input$p_bin)}), cols = input$ncols_bin)
+    kbl(res, booktabs = TRUE, escape=FALSE) %>% 
+      kable_styling(full_width = FALSE, bootstrap_options = c("bordered"), font_size = 12) %>%
+      row_spec(0, background = "#FF4500", color = "#ffffff") %>%
+      scroll_box(width = "100%", height = "200px")
+    
+  }
+  
   # Lógica para Poisson (VERSIÓN CORREGIDA)
   observeEvent(input$calc_pois, {
     req(input$lambda, input$num_pois)
@@ -353,6 +412,103 @@ function(input, output, session) {
       x <- replicate(input$num_pois, fun_poisson(input$lambda))
       cat("Media:", mean(x), "\nVarianza:", var(x))
     })
+    
+    output$tablaPois <- function(){
+      
+      req(input$distribucion, input$siguiente > 0)
+      
+      res <- conv_matrix(sapply(1:input$num_pois, function(k){fun_poisson(input$lambda)}), cols = input$ncols_pois)
+      kbl(res, booktabs = TRUE, escape=FALSE) %>% 
+        kable_styling(full_width = FALSE, bootstrap_options = c("bordered"), font_size = 12) %>%
+        row_spec(0, background = "#FF4500", color = "#ffffff") %>%
+        scroll_box(width = "100%", height = "200px")
+      
+    }
+  })
+  
+  # Lógica para Binomial Negativa
+  observeEvent(input$calc_bin_neg, {
+    req(input$r_bin_neg, input$p_bin_neg, input$num_bin_neg)
+    # Forzamos la actualización de los resultados
+    output$histBin_neg <- renderPlot({
+      x <- replicate(input$num_bin_neg, fun_binomial_negativa(input$r_bin_neg, input$p_bin_neg))
+      hist(x, breaks = 30, col = "#FF6347", 
+           main = "Distribución Binomial Negativa Simulada",
+           xlab = "Valores", ylab = "Frecuencia")
+    })
+    
+    output$statsBin_neg <- renderPrint({
+      x <- replicate(input$num_bin_neg, fun_binomial_negativa(input$r_bin_neg, input$p_bin_neg))
+      cat("Media:", mean(x), "\nVarianza:", var(x))
+    })
+    
+    output$tablaBin_neg <- function(){
+      
+      req(input$distribucion, input$siguiente > 0)
+      
+      res <- conv_matrix(sapply(1:input$num_bin_neg, function(k){fun_binomial_negativa(input$r_bin_neg, input$p_bin_neg)}), cols = input$ncols_bin_neg)
+      kbl(res, booktabs = TRUE, escape=FALSE) %>% 
+        kable_styling(full_width = FALSE, bootstrap_options = c("bordered"), font_size = 12) %>%
+        row_spec(0, background = "#FF4500", color = "#ffffff") %>%
+        scroll_box(width = "100%", height = "200px")
+      
+    }
+  })
+  # Lógica para Otro Caso
+  observeEvent(input$calc_otro, {
+    req(input$valores_otro, input$probabilidades_otro, input$num_otro)
+    
+    # Procesar los valores y probabilidades ingresados
+    valores <- as.numeric(unlist(strsplit(input$valores_otro, ",")))
+    probabilidades <- as.numeric(unlist(strsplit(input$probabilidades_otro, ",")))
+    
+    # Validar que las probabilidades sumen 1 (con cierta tolerancia)
+    if(abs(sum(probabilidades) - 1) > 0.001) {
+      showModal(modalDialog(
+        title = "Error",
+        "Las probabilidades deben sumar 1",
+        easyClose = TRUE
+      ))
+      return()
+    }
+    
+    # Validar que haya la misma cantidad de valores y probabilidades
+    if(length(valores) != length(probabilidades)) {
+      showModal(modalDialog(
+        title = "Error",
+        "Debe haber el mismo número de valores y probabilidades",
+        easyClose = TRUE
+      ))
+      return()
+    }
+    
+    # Función para generar valores según la distribución personalizada
+    generar_otro_caso <- function(n) {
+      replicate(n, fun_otro_caso(valores, probabilidades))
+    }
+    
+    # Generar los valores
+    x <- generar_otro_caso(input$num_otro)
+    
+    # Mostrar resultados
+    output$histOtro <- renderPlot({
+      hist(x, breaks = 30, col = "#C8A2C8", 
+           main = "Distribución Personalizada Simulada",
+           xlab = "Valores", ylab = "Frecuencia")
+    })
+    
+    output$statsOtro <- renderPrint({
+      cat("Media:", mean(x), "\nVarianza:", var(x))
+    })
+    
+    output$tablaOtro <- function(){
+      req(input$distribucion, input$siguiente > 0)
+      res <- conv_matrix(generar_otro_caso(input$num_otro), cols = input$ncols_otro)
+      kbl(res, booktabs = TRUE, escape=FALSE) %>% 
+        kable_styling(full_width = FALSE, bootstrap_options = c("bordered"), font_size = 12) %>%
+        row_spec(0, background = "#8FBC8F", color = "#ffffff") %>%
+        scroll_box(width = "100%", height = "200px")
+    }
   })
   
   # Observador para resetear cuando cambia la distribución seleccionada

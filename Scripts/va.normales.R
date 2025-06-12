@@ -2,7 +2,7 @@
 
 # funcion de densidad de una distribucion normal
 fx <- function(x){
-  return(2/sqrt(2*pi)*exp(-0.5*x^2))
+  return(2/sqrt(2*pi)*exp(-0.5*x^2))#La funcion representa la mitad de la funcion de densidad de la normal estandar
 }
 
 x_vals <- seq(0, 5, by = 0.1)
@@ -52,7 +52,7 @@ fun_normal <- function(N){
 }
 
 # Porcentaje rechazados
-# sum(is.na(fun_normal(100000)))/100000
+sum(is.na(fun_normal(100000)))/100000
 X <- fun_normal(100000)
 hist(X[!is.na(X)])
 
@@ -82,7 +82,7 @@ hist(X[!is.na(X)])
 
 system.time(fun_normal(1000000))
 system.time(fun_normal2(1000000))
-
+# 5.3 Metodo polar para generar variables aleatorias normales
 # Transformaciones de Box Muller
 fun_box <- function(N){
   vec <- numeric(N)
@@ -98,7 +98,7 @@ fun_box <- function(N){
 hist(fun_box(100000))
 system.time(hist(fun_box(1000000)))
 
-plot(c(0,X), c(0,Y), type = "b")
+#plot(c(0,X), c(0,Y), type = "b")
 
 fun_box2 <- function(N){
   vec <- numeric(N)
